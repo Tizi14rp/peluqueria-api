@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negocio Web - Sistema Peluquería</title>
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Estilos Personalizados -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans flex flex-col md:flex-row min-h-screen">
+
+    <!-- Navegación -->
+    <nav class="bg-gray-900 text-white w-full md:w-64 p-5 md:min-h-screen flex flex-col">
+        <h1 class="text-2xl font-bold mb-8 text-center text-blue-400">Peluquería App</h1>
+        <div class="flex flex-col gap-4">
+            <button onclick="mostrarSeccion('turnos')" class="p-3 bg-gray-800 hover:bg-gray-700 rounded text-left transition">📅 Gestor de Turnos</button>
+            <button onclick="mostrarSeccion('caja')" class="p-3 bg-gray-800 hover:bg-gray-700 rounded text-left transition">💰 Caja y Pagos</button>
+            <button onclick="mostrarSeccion('estadisticas')" class="p-3 bg-gray-800 hover:bg-gray-700 rounded text-left transition">📊 Estadísticas</button>
+            <button onclick="mostrarSeccion('catalogo')" class="p-3 bg-gray-800 hover:bg-gray-700 rounded text-left transition">✂️ Catálogo de Cortes</button>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal -->
+    <main class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+
+        <!-- SECCIÓN 1: TURNOS -->
+        <section id="sec-turnos" class="seccion-app">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Gestor de Turnos</h2>
+                <button onclick="borrarTodos('turnos')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow">Borrar Todos</button>
+            </div>
+            
+            <form id="form-turno" class="bg-white p-4 rounded shadow-md mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="t-cliente" placeholder="Nombre del Cliente" class="border p-2 rounded w-full" required>
+                <input type="date" id="t-fecha" class="border p-2 rounded w-full" required>
+                <input type="time" id="t-hora" class="border p-2 rounded w-full" required>
+                <input type="text" id="t-servicio" placeholder="Servicio (ej. Corte, Tinte)" class="border p-2 rounded w-full" required>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded md:col-span-4 transition">Guardar Turno</button>
+            </form>
+
+            <div class="bg-white shadow-md rounded overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-800 text-white">
+                        <tr><th class="py-2 px-4">Cliente</th><th class="py-2 px-4">Fecha</th><th class="py-2 px-4">Hora</th><th class="py-2 px-4">Servicio</th><th class="py-2 px-4">Acciones</th></tr>
+                    </thead>
+                    <tbody id="lista-turnos" class="text-center"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CAJA Y PAGOS -->
+        <section id="sec-caja" class="seccion-app hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Caja y Pagos</h2>
+                <button onclick="borrarTodos('caja')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow">Borrar Todos</button>
+            </div>
+
+            <form id="form-caja" class="bg-white p-4 rounded shadow-md mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select id="c-tipo" class="border p-2 rounded w-full">
+                    <option value="Ingreso">Ingreso (+)</option>
+                    <option value="Gasto">Gasto (-)</option>
+                </select>
+                <input type="number" id="c-monto" placeholder="Monto ($)" class="border p-2 rounded w-full" required>
+                <input type="text" id="c-desc" placeholder="Descripción" class="border p-2 rounded w-full" required>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded md:col-span-3 transition">Registrar Movimiento</button>
+            </form>
+            <h3 class="text-xl font-bold mb-4" id="balance-total">Balance Total: $0</h3>
+            <ul id="lista-caja" class="space-y-3"></ul>
+        </section>
+
+        <!-- SECCIÓN 3: ESTADÍSTICAS -->
+        <section id="sec-estadisticas" class="seccion-app hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Estadísticas</h2>
+                <button onclick="borrarTodos('estadisticas')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow">Borrar Todas</button>
+            </div>
+
+            <form id="form-est" class="bg-white p-4 rounded shadow-md mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select id="e-cat" class="border p-2 rounded w-full">
+                    <option value="Servicios">Servicios más solicitados</option>
+                    <option value="Clientes">Clientes Frecuentes</option>
+                    <option value="Horarios">Horarios de Mayor Demanda</option>
+                </select>
+                <input type="text" id="e-nombre" placeholder="Nombre (ej. Corte Fade, 18:00)" class="border p-2 rounded w-full" required>
+                <input type="number" id="e-valor" placeholder="Cantidad / Frecuencia" class="border p-2 rounded w-full" required>
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded md:col-span-3 transition">Agregar Dato</button>
+            </form>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 shadow rounded"><canvas id="chart-servicios"></canvas></div>
+                <div class="bg-white p-4 shadow rounded"><canvas id="chart-clientes"></canvas></div>
+                <div class="bg-white p-4 shadow rounded"><canvas id="chart-horarios"></canvas></div>
+            </div>
+            
+            <h3 class="text-xl font-bold mt-8 mb-4">Datos Guardados</h3>
+            <ul id="lista-estadisticas" class="grid grid-cols-1 md:grid-cols-3 gap-4"></ul>
+        </section>
+
+        <!-- SECCIÓN 4: CATÁLOGO DE CORTES -->
+        <section id="sec-catalogo" class="seccion-app hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Catálogo de Cortes</h2>
+                <button onclick="borrarTodos('cortes')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow">Borrar Todos</button>
+            </div>
+
+            <form id="form-corte" class="bg-white p-4 rounded shadow-md mb-6 flex flex-col md:flex-row gap-4">
+                <input type="text" id="cat-nombre" placeholder="Nombre del Corte" class="border p-2 rounded flex-1" required>
+                <input type="url" id="cat-url" placeholder="URL de la imagen de internet" class="border p-2 rounded flex-1" required>
+                <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded transition">Añadir Corte</button>
+            </form>
+
+            <div id="grid-catalogo" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
+        </section>
+
+    </main>
+
+    <!-- Lógica de la aplicación -->
+    <script src="app.js"></script>
+</body>
+</html>
